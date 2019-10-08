@@ -8,6 +8,9 @@ import truckCostume
 ledOnboard = dotstar.DotStar(board.APA102_SCK, board.APA102_MOSI, 1, brightness=0.2)
 ledOnboard[0] = (0,0,255)
 
+# Using a DotStar Digital LED Strip with 30 LEDs connected to hardware SPI
+ledStrip = dotstar.DotStar(board.D2, board.D3, 60, brightness=.05, auto_write=False)
+
 # CONSTANTS
 orange = (255,128,0)
 red = (255,0,0)
@@ -15,8 +18,26 @@ green = (0,255,0)
 white = (255,255,255)
 black = (0,0,0)
 
+# HELPERS
+# a random color 0 -> 255
+def random_color():
+  return random.randrange(0, 255)
+
+# Clear the strip
+def Clear():
+  ledStrip.fill((0,0,0))
+  ledStrip.show()
+
+# Draws the whole strip
+def Draw(rgbList):  
+
+  for i in range(len(rgbList)):
+    ledStrip[i] = rgbList[i]
+
+  ledStrip.show()
+
 # INIT
-truckCostume.Clear()
+Clear()
 
 # Define a head light 
 NUM_HEAD_LIGHTS = 5
@@ -42,19 +63,17 @@ for i in range(NUM_TAIL_LIGHTS):
 wingTipLeft = [green,black]
 wingTipRight = [black,red]
 
-# HELPERS
-# a random color 0 -> 255
-def random_color():
-  return random.randrange(0, 255)
-
 # the loop counter for use in timing, from 1 to maxLoopCount
 loopCount = 1
 maxLoopCount = 5
 
+# MAIN LOOP
 while True:
+  
   colors = list()
   colors = headLight + headLight + engineLight + wingTipLeft[0] + tailLight + tailLight + engineLight + wingTipRight[0]
-  truckCostume.Draw(colors)
+  Draw(colors)
+
   time.sleep(.1)
 
   if loopCount >= 1:
@@ -66,8 +85,4 @@ while True:
   
   loopCount += 1
   if loopCount > maxLoopCount: loopCount = 1
-
-"""
-# Using a DotStar Digital LED Strip with 30 LEDs connected to hardware SPI
-ledStrip = dotstar.DotStar(board.D2, board.D3, 60, brightness=.05, auto_write=False)
-"""
+# END
